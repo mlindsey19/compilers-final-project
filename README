@@ -1,0 +1,122 @@
+Mitch Lindsey
+cs 4280 P2
+04/30/2019
+
+
+Stat Semantics Definition
+
+The only static semantics we impose that can be processed by the compiler (static) are proper use of variables.
+Variables
+Variables have to be defined before used first time (after satisfying syntax)
+Variable name can only be defined once in a scope but can be reused in another scope. There are two options for scope
+
+LOCAL SCOPE option
+
+Variables outside of a block are global
+Variables in a given block are scoped in this block
+Rules as in C (smaller scope hides the outer/global scope variable)
+
+
+
+*********************************************************************
+
+parser and scanner - returns a tree based on BNF:
+
+< program >    ->      <vars> <block>
+< block >      ->      Begin <vars> <stats> End
+< vars >       ->      empty | INT Identifier Integer <vars>
+< expr >       ->      <A> <K>
+< k >          ->      + <expr> | - <expr> | empty
+< a >          ->      <N> * <A> | <N>
+< n >          ->      <M> / <N> | <M>
+< m >          ->      - <M> |  <R>
+< r >          ->      [ <expr> ] | Identifier | Integer
+< stats >      ->      <stat> : <mStat>
+< mStat >      ->      empty |  <stat>  :  <mStat>
+< stat >       ->      <in> | <out> | <block> | <if> | <loop> | <assign>
+< in >         ->      Read [ Identifier ]
+< out >        ->      Output [ <expr> ]
+< if >         ->      IFF [ <expr> <ro> <expr> ] <stat>
+< loop >       ->      Loop [ <expr> <ro> <expr> ] <stat>
+< assign >     ->      Identifier  = <expr>
+< ro >         ->      < | = <  | >  | = > | =  =  |   =
+
+
+<mStat>, <vars> return NULL if empty
+
+invoke with ./statSem [filename]
+            ./statSem < [filename]
+            ./statSem
+      No file options read from the keyboard ^D to simulate EOF on linux
+      .input1 extension is optional ./frontEnd t4 or ./frontEnd t4.input1
+
+the first Node is the filename fallowed by program ( stdin if keyboard used )
+
+
+
+Lexical Definitions
+
+Case sensitive
+Each scanner error should display "Scanner Error:" followed by details including the line number if counted
+Alphabet
+    all English letters (upper and lower), digits, plus the extra characters as seen below, plus WS
+    No other characters allowed and they should generate errors
+Identifiers
+    begin with a an upper case letter and
+    continue with any number of letters or digits
+    you may assume no identifier is longer than 8 characters
+Keywords (reserved, suggested individual tokens)
+    Begin  End Loop Void INT Return Read Output Program IFF  Then Let
+Operators and delimiters group
+    =  <  >  :   +  -  *  /   %  . (  ) , { } ; [ ]
+Integers
+    any sequence of decimal digits, no sign, no decimal point
+    you may assume no number longer than 8 characters
+Comments start with \ and end with new line
+
+
+*******************************E X A M P L E*********************************
+
+INT X1 1 \ see possible tree
+INT X2 2
+Begin
+  INT X3 3
+  INT X4 4
+  Read [ X1 ] :
+  X1 = 1 + 2 :
+  Output [ 1 ] :
+End
+
+Program ok
+< t4.input1 >
+-- < program >
+-- -- < vars >  X1   1
+-- -- -- < vars >  X2   2
+-- -- < block >
+-- -- -- < vars >  X3   3
+-- -- -- -- < vars >  X4   4
+-- -- -- < stats >
+-- -- -- -- < stat >
+-- -- -- -- -- < in >  X1
+-- -- -- -- < mStat >
+-- -- -- -- -- < stat >
+-- -- -- -- -- -- < assign >  X1
+-- -- -- -- -- -- -- < expr >
+-- -- -- -- -- -- -- -- < a >
+-- -- -- -- -- -- -- -- -- < n >
+-- -- -- -- -- -- -- -- -- -- < m >
+-- -- -- -- -- -- -- -- -- -- -- < r >  1
+-- -- -- -- -- -- -- -- < k >  PLUS_tk
+-- -- -- -- -- -- -- -- -- < expr >
+-- -- -- -- -- -- -- -- -- -- < a >
+-- -- -- -- -- -- -- -- -- -- -- < n >
+-- -- -- -- -- -- -- -- -- -- -- -- < m >
+-- -- -- -- -- -- -- -- -- -- -- -- -- < r >  2
+-- -- -- -- -- < mStat >
+-- -- -- -- -- -- < stat >
+-- -- -- -- -- -- -- < out >
+-- -- -- -- -- -- -- -- < expr >
+-- -- -- -- -- -- -- -- -- < a >
+-- -- -- -- -- -- -- -- -- -- < n >
+-- -- -- -- -- -- -- -- -- -- -- < m >
+-- -- -- -- -- -- -- -- -- -- -- -- < r >  1

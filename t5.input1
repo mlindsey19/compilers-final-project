@@ -1,0 +1,7 @@
+Begin
+  IFF [ X1 = < 2 ] \ var X1 undefined
+  Begin
+    INT X1 1
+    Output [ X1 ] : 
+  End :
+End
