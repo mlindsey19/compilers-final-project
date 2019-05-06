@@ -87,9 +87,12 @@ void popBlock(){
 }
 void popGlobals(){
     if ( stack ){
-        int temp = varsNum;
-        while( temp-- )
-            toOutput("", temp, NULL);
+        char buf[STR];
+        while( varsNum ) {
+            memset(buf, 0, STR);
+            sprintf(buf, "X%i ", --varsNum);
+            toOutput(buf, -1, "0");
+        }
         popBlock();
     }
 
