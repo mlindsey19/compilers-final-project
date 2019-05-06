@@ -1,7 +1,10 @@
+INT X1 0
 Begin
-  IFF [ X1 = < 2 ] \ var X1 undefined
-  Begin
-    INT X1 1
-    Output [ X1 ] : 
-  End :
+Read[ X1]:
+  IFF [ X1 = = 2 ] \ var X1 undefined
+  IFF [ X1 = < 10 ]
+    Output [ X1 ] :
+    Begin
+    X1 = 5 * X1:
+    End:
 End

@@ -8,12 +8,14 @@
 #include "testTree.h"
 
 FILE * file;
+FILE * output;
 
 int main (int argc, char **argv){
 
     FILE * fp;
     char infile[32];
     char *ext = ".input1";
+    output = fopen("target.asm", "w");
 
     if (argc == 1){
         fp = stdin;
@@ -32,6 +34,8 @@ int main (int argc, char **argv){
     parser(root);
    // traverseTree(root);
     fclose(fp);
+    fclose(output);
+
 
     return 0;
 }

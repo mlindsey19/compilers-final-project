@@ -13,4 +13,4 @@ statSem: $(OBJ)
 	$(CC) -c $(CFLAGS) $*.c -o $*.o
 
 clean:
-	rm statSem *.o
+	rm statSem *.o *.asm

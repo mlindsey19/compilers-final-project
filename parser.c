@@ -51,9 +51,9 @@ static Node * program(){
     node->child_0 = vars();
     node->child_1 = block();
 
+    programStop();
     //pop global
     popGlobals();
-
     if ( tk.id == EOFtk )
         printf( "Program ok\n" );
     else
@@ -163,6 +163,9 @@ static Node * out(){
             tk = scanner();
             node->child_0 = expr();
             if (isInstance(tk.instance, toString(CLOSE_BRACKET_tk))) {
+                int local = getVarNum();
+                storex(local);
+                writex(local);
                 tk = scanner();
             } else
                 parseError(toString(CLOSE_BRACKET_tk));
@@ -184,7 +187,13 @@ static Node * in(){
             if ( tk.id == IDENTtk && isNotKeyWd( tk.instance ) ) {
                 node->linkToken= createTokenNode();
 
-                checkUndefined(&tk);
+                int stackPos = checkUndefined(&tk);
+                int local = getVarNum();
+                readx(local);
+                loadx(local);
+                stackw(stackPos);
+
+
 
                 tk = scanner();
                 if (isInstance(tk.instance, toString(CLOSE_BRACKET_tk))) {
@@ -206,12 +215,19 @@ static Node * iff(){
         tk= scanner();
         if( isInstance( tk.instance, toString( OPEN_BRACKET_tk ) ) ){
             tk = scanner();
+            int local =getVarNum();
+            int outNum = getOutNum();
             node->child_0 = expr();
+            storex(local);
             node->child_1 = ro();
+
             node->child_2 = expr();
+            outOf(local, node->child_1->linkToken, outNum);
+
             if (isInstance( tk.instance, toString( CLOSE_BRACKET_tk ) ) ){
                 tk = scanner();
                 node->child_3 = stat();
+                outMark(outNum);
             } else
                 parseError( toString( CLOSE_BRACKET_tk ) );
         } else
@@ -222,17 +238,23 @@ static Node * iff(){
 }
 static Node * assign(){
     Node * node = createNode(toString(assign));
-
     if( tk.id == IDENTtk  && isNotKeyWd( tk.instance )){
         node->linkToken = createTokenNode();
-        checkUndefined(&tk);
+
+        int stackPos = checkUndefined(&tk);
 
         tk = scanner();
         if ( isInstance( tk.instance, toString( EQUAL_tk ) ) ) {
             tk = scanner();
             node->child_0 = expr();
+
+
+            stackw(stackPos);
+
+
         } else parseError( toString( EQUAL_tk) );
     } else parseError( toString( IDENTtk) );
+
     return node;
 }
 static Node * loop(){
@@ -242,12 +264,25 @@ static Node * loop(){
         tk = scanner();
         if( isInstance( tk.instance, toString( OPEN_BRACKET_tk ) ) ){
             tk = scanner();
+
+            int local =getVarNum();
+            int outNum = getOutNum();
+            int inNum = getInNum();
+            inMark(inNum);
+
             node->child_0 = expr();
+            storex(local);
+
             node->child_1 = ro();
             node->child_2 = expr();
+            outOf(local, node->child_1->linkToken, outNum);
+
             if (isInstance( tk.instance, toString( CLOSE_BRACKET_tk ) ) ){
                 tk = scanner();
                 node->child_3 = stat();
+                outMark(outNum);
+
+
             } else
                 parseError( toString( CLOSE_BRACKET_tk ) );
         } else
@@ -269,7 +304,16 @@ static Node * k(){
          || isInstance( tk.instance, toString( PLUS_tk ) ) ){
         node->linkToken = createTokenNode();
         tk = scanner();
+
+        int local = getVarNum();
+        storex(local);
         node->child_0 = expr();
+
+        if ( isInstance(tk.instance, toString(MINUS_tk)))
+           subx(local);
+        else
+            addx(local);
+
         return node;
 
     }
@@ -277,23 +321,31 @@ static Node * k(){
 }
 static Node * a(){
     Node * node = createNode(toString(a));
-
+    int local;
     node->child_0 = n();
+
     if ( isInstance( tk.instance, toString( ASTERISK_tk ) ) ){
+        local =getVarNum();
+        storex(local);
         node->linkToken = createTokenNode();
         tk = scanner();
         node->child_1 = a();
+        multx(local);
     }
     return node;
 }
 static Node * n(){
     Node * node = createNode(toString(n));
-
+    int local;
     node->child_0 = m();
     if (isInstance( tk.instance, toString( SLASH_tk ))){
+        local =getVarNum();
+        storex(local);
+
         node->linkToken =createTokenNode();
         tk = scanner();
         node->child_1 = n();
+        divx(local);
     }
     return node;
 }
@@ -304,6 +356,7 @@ static Node * m(){
         node->linkToken = createTokenNode();
         tk=scanner();
         node->child_0 = m();
+        multNeg();
     } else
         node->child_0 = r();
     return node;
@@ -320,8 +373,12 @@ static Node * r(){
             parseError( toString( OPEN_BRACKET_tk) );
     } else if( tk.id == NUMtk || ( tk.id == IDENTtk && isNotKeyWd( tk.instance ) ) ) {
         node->linkToken = createTokenNode();
-       if(tk.id == IDENTtk)
-           checkUndefined(&tk);
+        if(tk.id == IDENTtk) {
+            int stackPos = checkUndefined(&tk);
+            stackr(stackPos);
+        }else
+            loadi(tk.instance);
+
         tk = scanner();
     }else
         parseError( "expr, identifier or integer" );

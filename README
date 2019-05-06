@@ -3,9 +3,38 @@ cs 4280 P2
 05/05/2019
 
 
+o BR (1, jump to arg)
+o BRNEG (1, jump to arg if ACC <0)
+o BRZNEG (1, jump to arg if ACC <=0)
+o BRPOS (1, jump to arg if ACC >0)
+o BRZPOS (1, jump to arg if ACC >=0)
+o BRZERO (1, jump to arg if ACC ==0)
+o COPY (2, arg1 = arg2)
+o ADD (1, ACC = ACC +argoSUB (1, ACC = ACC - arg)
+o DIV (1, ACC = ACC / arg)oMULT (1, ACC = ACC * arg)
+o READ (1, arg=input integer)
+o WRITE (1, put arg to output as integer)
+o STOP (0, stop program)
+o STORE (1, arg = ACC)
+o LOAD (1, ACC=arg)oNOOP (0, nothing)
 
-add p4 info...
+• ADD, DIV, MULT, WRITE, LOAD, SUB
+    o can take either variable or immediate value as the argument
+    o immediate value is positive integer or negative 2-byte integer
 
+PUSH/POP
+• are only means to reserve/delete automatic storage.
+
+STACKW/STACKR n
+ • these are stack access (random access) instructions.
+ • n must be a non-negative number
+ • the access is to nth element down from TOS
+    NOTE: TOS points to the topmost element on the stack
+
+o PUSH (0, tos++)
+o POP (0, tos--)
+o STACKW (1,stack[tos-arg]=ACC)
+o STACKR (1,ACC=stack[tos-arg])
 
 
 
