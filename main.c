@@ -14,7 +14,7 @@ int main (int argc, char **argv){
 
     FILE * fp;
     char infile[32];
-    char outfile[32]= "out.asm\0";;
+    char outfile[32]= "out.asm\0";
     memset(infile,0,32);
     char *ext = ".input1";
     char *extout = ".asm";

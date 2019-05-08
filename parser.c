@@ -55,7 +55,7 @@ static Node * program(){
     //pop global
     popGlobals();
     if ( tk.id == EOFtk )
-        printf( "Program ok\n" );
+       ;// printf( "Program ok\n" );
     else
         parseError( toString( EOFtk ) );
     return node;
