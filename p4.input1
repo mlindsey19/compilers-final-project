@@ -1,0 +1,5 @@
+INT X1 1
+Begin
+  X1 =  1 + 6 - 3 * 5 / 2 :
+  Output [ X1 ] :
+End

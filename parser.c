@@ -276,10 +276,10 @@ static Node * loop(){
             node->child_1 = ro();
             node->child_2 = expr();
             outOf(local, node->child_1->linkToken, outNum);
-
             if (isInstance( tk.instance, toString( CLOSE_BRACKET_tk ) ) ){
                 tk = scanner();
                 node->child_3 = stat();
+                backIn(inNum);
                 outMark(outNum);
 
 
@@ -301,17 +301,22 @@ static Node * k(){
     Node * node = createNode(toString(k));
 
     if ( isInstance(tk.instance, toString(MINUS_tk))
-         || isInstance( tk.instance, toString( PLUS_tk ) ) ){
+         || isInstance( tk.instance, toString( PLUS_tk ) ) ) {
         node->linkToken = createTokenNode();
+        Token tmpTk = tk;
         tk = scanner();
 
-        int local = getVarNum();
+        int local , local2;
+        local = getVarNum();
         storex(local);
         node->child_0 = expr();
 
-        if ( isInstance(tk.instance, toString(MINUS_tk)))
-           subx(local);
-        else
+        if (isInstance(tmpTk.instance, toString(MINUS_tk))){
+            local2 =getVarNum();
+            storex(local2);
+            loadx(local);
+            subx(local2);
+        }else
             addx(local);
 
         return node;
@@ -326,8 +331,8 @@ static Node * a(){
 
     if ( isInstance( tk.instance, toString( ASTERISK_tk ) ) ){
         local =getVarNum();
-        storex(local);
         node->linkToken = createTokenNode();
+        storex(local);
         tk = scanner();
         node->child_1 = a();
         multx(local);
@@ -336,7 +341,7 @@ static Node * a(){
 }
 static Node * n(){
     Node * node = createNode(toString(n));
-    int local;
+    int local, local2;
     node->child_0 = m();
     if (isInstance( tk.instance, toString( SLASH_tk ))){
         local =getVarNum();
@@ -345,7 +350,10 @@ static Node * n(){
         node->linkToken =createTokenNode();
         tk = scanner();
         node->child_1 = n();
-        divx(local);
+        local2 =getVarNum();
+        storex(local2);
+        loadx(local);
+        divx(local2);
     }
     return node;
 }
@@ -393,16 +401,17 @@ static Node * ro(){
         return node;
     }else if (isInstance( tk.instance, toString( EQUAL_tk ) ) ){
         tk = scanner();
-        node->linkToken->link = createTokenNode( tk );
+
         if (isInstance( tk.instance, toString( EQUAL_tk ) ) ||
             isInstance( tk.instance, toString( LESS_THAN_tk ) ) ||
             isInstance( tk.instance, toString( GREATER_THAN_tk ) ) ){
+            node->linkToken->link = createTokenNode( tk );
             tk = scanner();
             return node;
         }
     } else
         parseError("cond operator");
-    return NULL;
+    return node;
 }
 
 

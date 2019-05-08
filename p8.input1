@@ -1,0 +1,7 @@
+INT X1 1
+Begin
+  Read [ X1 ] :
+  IFF [ X1 = > 1 ]
+     IFF [ X1 = < 10 ]
+        Output [ X1 ] :
+End

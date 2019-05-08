@@ -1,0 +1,13 @@
+INT X1 1
+Begin
+  INT X2 2
+  Read [ X1 ] :
+  Read [ X2 ] :
+  Begin
+    INT X2 3
+    Read [ X2 ] :
+     Output [ X2 ] :
+  End :
+  Output [ X2 ] :
+  Output [ X1 ] :
+End

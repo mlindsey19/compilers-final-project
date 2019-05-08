@@ -1,0 +1,8 @@
+INT X1 1
+Begin
+  Read [ X1 ] :
+  Begin
+      X1 = X1 + 1 :
+  End :
+  Output [ X1 ] :
+End

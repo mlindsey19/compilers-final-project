@@ -37,7 +37,7 @@ static void pop(){
     temp = stack;
     stack = stack->previous;
     topOfStack--;
-    varsNum--;
+   // varsNum--;
     if (scope > 0)
         fprintf(output, "POP\n");
     free(temp);
@@ -86,15 +86,15 @@ void popBlock(){
     }
 }
 void popGlobals(){
-    if ( stack ){
-        char buf[STR];
-        while( varsNum ) {
-            memset(buf, 0, STR);
-            sprintf(buf, "X%i ", --varsNum);
-            toOutput(buf, -1, "0");
-        }
-        popBlock();
+    char buf[STR];
+    while( varsNum ) {
+        memset(buf, 0, STR);
+        sprintf(buf, "X%i ", --varsNum);
+        toOutput(buf, -1, "0");
     }
+    if ( stack )
+        popBlock();
+
 
 }
 void push( Token * tk ){
@@ -113,13 +113,11 @@ void increaseScope(){
 void decreaseScope(){
     scope--;
 }
-int checkRedefined(Token * tk){
+void checkRedefined(Token * tk){
     Stack * temp;
     temp = find( tk, stack, 0);
     if( temp  && temp->scope == scope)
         scopeError(tk, "Redefined");
-
-    //  return temp->pos;
 }
 int checkUndefined(Token *tk){
     Stack * temp = find( tk, stack, 0);
@@ -131,7 +129,8 @@ int getVarNum(){
     return varsNum++;
 }
 void readx(int local){
-
+    char * str = "READ ";
+    toOutput(str, local, NULL);
 }
 void loadx(int local){
     char * str = "LOAD ";
@@ -145,7 +144,7 @@ void stackw(int stackPos){
     char * str = "STACKW ";
     char num[STR];
     memset(num,0,STR);
-    sprintf(num,"%i",stackPos);
+    sprintf(num,"%i", topOfStack - stackPos -1 );
     toOutput(str, -1, num);
 
 }
@@ -154,7 +153,7 @@ void stackr(int stackPos) {
     char * str = "STACKR ";
     char num[STR];
     memset(num,0,STR);
-    sprintf(num,"%i",stackPos);
+    sprintf(num,"%i", topOfStack - stackPos -1 );
     toOutput(str, -1, num);
 }
 void storex( int local ){
@@ -168,10 +167,18 @@ void writex( int local ){
 void inMark(int inNum){
     char in[STR];
     memset(in, 0, STR);
-    sprintf(in, "out%i ", inNum);
+    sprintf(in, "in%i: ", inNum);
     //break to if false
-    toOutput(in,-1, ":");
+    fprintf(output, in);
 }
+void backIn(int inNum){
+    char in[STR];
+    memset(in, 0, STR);
+    sprintf(in, "BR in%i ", inNum);
+    //break to if false
+    toOutput(in,-1, "");
+}
+
 int getOutNum(){
     return outStmtNum++;
 }
@@ -187,26 +194,32 @@ void outOf(int local, LinkToken * link, int outNum) {
     char *SUB = "SUB ";
     toOutput(SUB, local, NULL);
 
-    char *BRNEG = "BRNEG ";
-    char *BRPOS = "BRPOS ";
-    char *BRZNEG = "BRZNEG ";
-    char *BRZPOS = "BRZPOS ";
+    char * BRNEG = "BRNEG ";
+    char * BRPOS = "BRPOS ";
+    char * BRZNEG = "BRZNEG ";
+    char * BRZPOS = "BRZPOS ";
+    char * BRZERO = "BRZERO ";
+
     if (isInstance(link->token.instance, toString(EQUAL_tk))) {
         if (link->link) {
             if (isInstance(link->link->token.instance, toString(EQUAL_tk))) {
-                toOutput(BRNEG, -1, out);
-                toOutput(BRPOS, -1, out);
+                toOutput(BRZERO, -1, out);
             } else if (isInstance(link->link->token.instance, toString(LESS_THAN_tk))) {
-                toOutput(BRPOS, -1, out);
-            } else if (isInstance(link->link->token.instance, toString(GREATER_THAN_tk))) {
                 toOutput(BRNEG, -1, out);
+            } else if (isInstance(link->link->token.instance, toString(GREATER_THAN_tk))) {
+                toOutput(BRPOS, -1, out);
             }
+        } else{
+            toOutput(BRNEG, -1, out);
+            toOutput(BRPOS, -1, out);
+
+
         }
 
-    } else if (isInstance(link->link->token.instance, toString( GREATER_THAN_tk ))){
+    } else if (isInstance(link->token.instance, toString( GREATER_THAN_tk ))){
         toOutput(BRZPOS, -1, out);
     }
-    else if (isInstance(link->link->token.instance ,toString( LESS_THAN_tk ))){
+    else if (isInstance(link->token.instance ,toString( LESS_THAN_tk ))){
         toOutput(BRZNEG, -1, out);
     }
 
@@ -221,7 +234,7 @@ void outMark(int outNum) {
     memset(out, 0, STR);
     sprintf(out, "out%i", outNum);
     //break to if false
-    toOutput(out,-1, ":");
+    toOutput(out,-1, ": NOOP");
 }
 void programStop(){
     toOutput("STOP", -1, "");

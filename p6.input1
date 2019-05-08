@@ -1,0 +1,4 @@
+Begin
+  IFF [ 1 = < 2 ]
+    Output [ 1 ] :
+End

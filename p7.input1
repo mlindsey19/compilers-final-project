@@ -1,0 +1,6 @@
+INT X1 1
+Begin
+  Read [ X1 ] :
+  IFF [ X1 =  5 / 2 * 2 - 3 ]
+    Output [ 1 ] :
+End

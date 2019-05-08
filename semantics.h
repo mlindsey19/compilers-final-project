@@ -24,7 +24,7 @@ void popGlobals();
 void push( Token * );
 void increaseScope();
 void decreaseScope();
-int checkRedefined(Token * );
+void checkRedefined(Token * );
 int checkUndefined(Token *tk);
 int getVarNum();
 void readx( int );
@@ -45,6 +45,6 @@ void subx( int);
 void divx( int);
 void multx( int);
 void multNeg( );
-
+void backIn(int );
 
 #endif //PROJECT_3_SEMANTICS_H

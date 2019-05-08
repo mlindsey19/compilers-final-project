@@ -1,0 +1,15 @@
+INT X1 1
+INT X2 2
+Begin
+  Read [ X1 ] :
+  Loop [ X1 = > 0 ]
+  Begin
+        X2 = X1 :
+        Loop [ X2 > 0 ]
+        Begin
+          Output [ X1 ] :
+          X2 = X2 - 1 :
+        End :
+        X1 = X1 - 1 :
+  End :
+End
