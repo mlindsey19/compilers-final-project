@@ -1,10 +1,10 @@
 Mitch Lindsey
-cs 4280 P2
-05/05/2019
+cs 4280 P4
+05/07/2019
 
-Storage=Global
+Storage = Local Scope
 
-all tests work
+all tests files give correct output
 
 
 o BR (1, jump to arg)
@@ -86,9 +86,9 @@ parser and scanner - returns a tree based on BNF:
 
 <mStat>, <vars> return NULL if empty
 
-invoke with ./statSem [filename]
-            ./statSem < [filename]
-            ./statSem
+invoke with ./comp [filename]
+            ./comp < [filename]
+            ./comp
       No file options read from the keyboard ^D to simulate EOF on linux
       .input1 extension is optional ./frontEnd t4 or ./frontEnd t4.input1
 

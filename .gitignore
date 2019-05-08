@@ -11,9 +11,6 @@ cmake_install.cmake
 *.swp
 *.bak
 a.out
-ass1_OS_4760.pdf
 
-statSem
-
+comp
 *.o
-a.out
