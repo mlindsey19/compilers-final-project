@@ -2,6 +2,10 @@ Mitch Lindsey
 cs 4280 P2
 05/05/2019
 
+Storage=Global
+
+all tests work
+
 
 o BR (1, jump to arg)
 o BRNEG (1, jump to arg if ACC <0)
